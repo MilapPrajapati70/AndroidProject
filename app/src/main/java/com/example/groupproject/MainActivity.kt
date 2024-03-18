@@ -1,6 +1,5 @@
 package com.example.groupproject;
 
-import PostAdapter
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Intent
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.groupproject.Post
 import com.example.groupproject.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 
@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databaseRef: DatabaseReference
 
     private lateinit var postsList: MutableList<Post>
+    private lateinit var auth: FirebaseAuth
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +32,13 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = PostAdapter(mutableListOf())
+        adapter = PostAdapter()
         recyclerView.adapter = adapter
 
         // Initialize Firebase database reference
         databaseRef = FirebaseDatabase.getInstance().reference.child("posts")
+
+        auth = FirebaseAuth.getInstance()
 
         postsList = mutableListOf()
 
@@ -63,6 +67,16 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, "Error loading posts", error.toException())
             }
         })
+    }
+
+    fun logout(view: View) {
+        // Sign out the current user
+        auth.signOut()
+
+        // Navigate back to LoginActivity
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
 
